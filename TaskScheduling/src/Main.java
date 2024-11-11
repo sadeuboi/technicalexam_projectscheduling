@@ -7,8 +7,10 @@ public class Main {
         projectClass.createTask("Wash the dishes", 1);
         projectClass.createTask("Prepare for the exam", 5);
         projectClass.createTask("Practice Exam", 2);
+        projectClass.createTask("Hangout with friends", 1);
 
         projectClass.createDependency("Practice exam", "Prepare for the exam");
+        projectClass.createDependency("Hangout with friends", "Prepare for the exam");
 
         projectClass.generateSchedule();
 

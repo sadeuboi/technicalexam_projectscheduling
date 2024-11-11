@@ -22,9 +22,9 @@ public class ProjectClass {
                     .append("\nStart Date: ").append(taskClass.getStartDate()).append("\nEnd Date:").append(taskClass.getEndDate())
                     .append("\nDependencies:");
             taskClass.getDependencies().forEach(dependency -> {
-                scheduleOutput.append(dependency.getName()).append("\n");
+                scheduleOutput.append(dependency.getName());
             });
-
+            scheduleOutput.append("\n");
         });
 
         return scheduleOutput.toString();
@@ -33,6 +33,7 @@ public class ProjectClass {
     public void createTask(String name, int duration) {
         TaskClass task = new TaskClass(name, duration);
         taskList.add(task);
+        System.out.println("New task created!");
     }
 
     public void createDependency(String taskName, String dependencyName) {
@@ -41,6 +42,7 @@ public class ProjectClass {
 
         if (task.isPresent() && dependency.isPresent()) {
             task.get().getDependencies().add(dependency.get());
+            System.out.println("New dependency created!");
         } else {
             System.out.println("Task or Dependency does not exist!");
         }
@@ -65,23 +67,28 @@ public class ProjectClass {
 
     private List<TaskClass> sortTasks() {
         List<TaskClass> sortedTasks = new ArrayList<>();
-        Set<String> visitedTasks = new HashSet<>();
-        taskList.forEach(task -> {
-            if (!visitedTasks.contains(task.getName())) {
-                sortTaskHelper(task, visitedTasks, sortedTasks);
+        List<String> visitedTasks = new ArrayList<>();
+        for (TaskClass task : taskList) {
+            if (!isVisited(task.getName(), visitedTasks)) {
+                sortTaskDependencies(sortedTasks, task, visitedTasks);
             }
-        });
+        }
+
         return sortedTasks;
     }
 
-    private void sortTaskHelper(TaskClass task, Set<String> visitedTasks, List<TaskClass> sortedList) {
+    private void sortTaskDependencies(List<TaskClass> sortedList, TaskClass task, List<String> visitedTasks) {
         visitedTasks.add(task.getName());
         for (TaskClass dependency : task.getDependencies()) {
-            if (!visitedTasks.contains(dependency.getName())) {
-                sortTaskHelper(dependency, visitedTasks, sortedList);
+            if (!isVisited(dependency.getName(), visitedTasks)) {
+                sortTaskDependencies(sortedList, dependency, visitedTasks);
             }
         }
         sortedList.add(task);
+    }
+
+    private boolean isVisited(String taskName, List<String> visitedTasks) {
+        return visitedTasks.contains(taskName);
     }
 
 
